@@ -1,5 +1,5 @@
-/* Branson Explorer design tokens — Copper. Dark is the default; light via data-theme or OS setting. */
-@import url("https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap");
+/* Branson Explorer design tokens — Copper. Dark is the default; light via data-theme or OS setting.
+   Accent tokens can be overridden per venue or user with themeCss() from src/core/theme.ts. */
 
 :root {
   color-scheme: dark;
@@ -19,9 +19,9 @@
   --be-seat-unavailable-mark: #6E655F;
   --be-seat-hold-stripe: #B8AFA8;
 
-  --be-font-display: "Big Shoulders Display", "Arial Narrow", sans-serif;
-  --be-font-body: "DM Sans", system-ui, sans-serif;
-  --be-font-mono: "DM Mono", ui-monospace, monospace;
+  --be-font-display: var(--font-display, "Big Shoulders"), "Arial Narrow", sans-serif;
+  --be-font-body: var(--font-body, "DM Sans"), system-ui, sans-serif;
+  --be-font-mono: var(--font-mono, "DM Mono"), ui-monospace, monospace;
 
   --be-radius-control: 6px;
   --be-radius-card: 10px;
