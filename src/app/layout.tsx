@@ -3,7 +3,13 @@ import { Big_Shoulders, DM_Mono, DM_Sans } from "next/font/google";
 import "../../design/tokens.css";
 import "./globals.css";
 
-const display = Big_Shoulders({ variable: "--font-display", subsets: ["latin"], axes: ["opsz"] });
+const display = Big_Shoulders({
+  variable: "--font-display",
+  subsets: ["latin"],
+  axes: ["opsz"],
+  adjustFontFallback: false,
+  fallback: ["Arial Narrow", "sans-serif"],
+});
 const body = DM_Sans({ variable: "--font-body", subsets: ["latin"] });
 const mono = DM_Mono({ variable: "--font-mono", subsets: ["latin"], weight: ["400", "500"] });
 

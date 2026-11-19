@@ -40,7 +40,9 @@ Tests in `src/core/inventory.test.ts` run against in-process Postgres (PGlite) a
 
 ## Roles
 
-`platform_admin`, `call_center` (all venues), `venue_manager`, `box_office`, `door`. Stored in `memberships`; `org_id` null means platform-wide.
+`platform_admin`, `call_center` (all venues), `venue_manager`, `box_office`, `door`. Stored in `memberships`; `org_id` null means platform-wide, `venue_id` set limits a membership to one venue. Rules live in `src/core/permissions.ts`; every server action checks them against the exact company and venue it changes. Supply type, money model, commission and service fee are platform-only terms.
+
+Sessions are HMAC-signed cookies (`src/core/session.ts`). Development sign-in is a stand-in for the real login provider and is disabled in production.
 
 ## Theming
 
@@ -52,7 +54,7 @@ Sales channel, staff member, payment method, price breakdown (fee, tax, payout, 
 
 ## Roadmap
 
-1. **Foundation** (in progress): schema, inventory engine, pricing, theming, site shell. Next: staff sign-in and roles, admin for venues/products/seat maps.
+1. **Foundation** (in progress): schema, inventory engine, pricing, theming, site shell, roles and permissions, staff admin (venues, seat maps, shows and attractions, brand colors). Next: dates and time slots, then production sign-in (Supabase Auth) to replace development sign-in.
 2. **Marketplace**: catalog from the database, checkout with Stripe Connect, mobile tickets and vouchers, voucher redemption page, call-center selling.
 3. **Venue platform basics**: offline-capable scanning app, live dashboard, venue-branded checkout.
 4. **Full box office**: window and phone screens, close-outs, settlements, migrations from old systems.

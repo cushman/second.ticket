@@ -1,0 +1,123 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-end;
+}
+
+.wheel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.wheel input {
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 1px solid var(--be-line);
+  border-radius: var(--be-radius-control);
+  background: none;
+  cursor: pointer;
+}
+
+.hex {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.hex input {
+  width: 130px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--be-line);
+  border-radius: var(--be-radius-control);
+  background: var(--be-bg);
+  color: var(--be-fg);
+  font: 500 16px var(--be-font-mono);
+  text-transform: uppercase;
+}
+
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--be-radius-control);
+  border: 2px solid transparent;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.swatch[aria-pressed="true"] {
+  border-color: var(--be-fg);
+}
+
+.previews {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.preview {
+  border-radius: var(--be-radius-card);
+  border: 1px solid var(--be-line);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.modeLabel {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+}
+
+.previewTitle {
+  font-family: var(--be-font-display);
+  font-weight: 900;
+  font-size: 30px;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.previewButton {
+  padding: 10px 16px;
+  border-radius: var(--be-radius-control);
+  font-weight: 800;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.previewHex {
+  font-family: var(--be-font-mono);
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.note {
+  margin: 0;
+  font-size: 14px;
+  color: var(--be-muted);
+}
