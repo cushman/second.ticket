@@ -1,0 +1,69 @@
+/* Branson Explorer design tokens — Copper. Dark is the default; light via data-theme or OS setting. */
+@import url("https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap");
+
+:root {
+  color-scheme: dark;
+
+  --be-bg: #151312;
+  --be-panel: #201C1A;
+  --be-photo: #2C2724;
+  --be-line: #3B3531;
+  --be-fg: #F5F0EB;
+  --be-muted: #B8AFA8;
+  --be-accent: #E8834A;
+  --be-on-accent: #151312;
+  --be-accent-text: #F09A66;
+
+  --be-seat-ring: #C9BFB8;
+  --be-seat-unavailable: #2B2623;
+  --be-seat-unavailable-mark: #6E655F;
+  --be-seat-hold-stripe: #B8AFA8;
+
+  --be-font-display: "Big Shoulders Display", "Arial Narrow", sans-serif;
+  --be-font-body: "DM Sans", system-ui, sans-serif;
+  --be-font-mono: "DM Mono", ui-monospace, monospace;
+
+  --be-radius-control: 6px;
+  --be-radius-card: 10px;
+  --be-radius-seat: 3px 3px 1px 1px;
+
+  --be-text-min: 13px;
+  --be-text-body: 17px;
+  --be-text-lead: 19px;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --be-bg: #F5F3F1;
+    --be-panel: #FFFFFF;
+    --be-photo: #EAE5E1;
+    --be-line: #DCD4CE;
+    --be-fg: #1C1816;
+    --be-muted: #4F4641;
+    --be-accent: #B4531E;
+    --be-on-accent: #FFFFFF;
+    --be-accent-text: #A04717;
+    --be-seat-ring: #6B615B;
+    --be-seat-unavailable: #ECE7E3;
+    --be-seat-unavailable-mark: #A39992;
+    --be-seat-hold-stripe: #6B615B;
+  }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --be-bg: #F5F3F1;
+  --be-panel: #FFFFFF;
+  --be-photo: #EAE5E1;
+  --be-line: #DCD4CE;
+  --be-fg: #1C1816;
+  --be-muted: #4F4641;
+  --be-accent: #B4531E;
+  --be-on-accent: #FFFFFF;
+  --be-accent-text: #A04717;
+  --be-seat-ring: #6B615B;
+  --be-seat-unavailable: #ECE7E3;
+  --be-seat-unavailable-mark: #A39992;
+  --be-seat-hold-stripe: #6B615B;
+}
