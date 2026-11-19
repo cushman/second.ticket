@@ -15,6 +15,13 @@
       "when": 1795060718845,
       "tag": "0001_performance_unique",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795092179019,
+      "tag": "0002_hold_items",
+      "breakpoints": true
     }
   ]
 }

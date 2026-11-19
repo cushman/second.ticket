@@ -42,6 +42,10 @@ Tests in `src/core/inventory.test.ts` run against in-process Postgres (PGlite) a
 
 `src/core/schedule.ts` expands a rule (date range, weekdays, start times or open/close with a slot interval, dark days) into exact start times in the venue's time zone, correct across daylight-saving changes. `src/core/performances.ts` creates the performances with their inventory: every seat for reserved shows, a capacity pool for general admission, time slots and allocation blocks. Existing start times are skipped, so re-running a schedule is safe (unique on product + start time). A date with tickets sold or held can be taken off sale but not cancelled; holds are refused for any date that isn't on sale.
 
+## Buying online (so far)
+
+Public pages read through `src/server/catalog.ts`: only on-sale, future dates are offered, and expired holds count as available. The seat picker and ticket counters call server actions (`src/app/shows/actions.ts`) that hold inventory for 10 minutes with the ticket type for each seat or quantity (`hold_items`), tagged with a random per-browser token (`be_cart` cookie). Only that browser can open its checkout page (`/checkout/[holdId]`) or release the hold. Checkout prices every line with `priceLine`, so the total shown includes service fees and tax. Payment (Stripe Connect) attaches there next.
+
 ## Roles
 
 `platform_admin`, `call_center` (all venues), `venue_manager`, `box_office`, `door`. Stored in `memberships`; `org_id` null means platform-wide, `venue_id` set limits a membership to one venue. Rules live in `src/core/permissions.ts`; every server action checks them against the exact company and venue it changes. Supply type, money model, commission and service fee are platform-only terms.
@@ -59,7 +63,7 @@ Sales channel, staff member, payment method, price breakdown (fee, tax, payout, 
 ## Roadmap
 
 1. **Foundation** (in progress): schema, inventory engine, pricing, theming, site shell, roles and permissions, staff admin (venues, seat maps, shows and attractions, schedules, brand colors). Next: production sign-in (Supabase Auth) to replace development sign-in.
-2. **Marketplace**: catalog from the database, checkout with Stripe Connect, mobile tickets and vouchers, voucher redemption page, call-center selling.
+2. **Marketplace** (in progress): catalog, show pages, date/time pickers, seat picker with best-available, ticket counters and held checkout are built. Next: payment with Stripe Connect, mobile tickets and vouchers, voucher redemption page, call-center selling.
 3. **Venue platform basics**: offline-capable scanning app, live dashboard, venue-branded checkout.
 4. **Full box office**: window and phone screens, close-outs, settlements, migrations from old systems.
 5. **Integrations** with other ticketing systems as venues need them.

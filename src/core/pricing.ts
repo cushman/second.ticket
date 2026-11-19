@@ -89,3 +89,20 @@ export function sumLines(lines: LineResult[]) {
     { subtotalCents: 0, discountCents: 0, feeCents: 0, taxCents: 0, totalCents: 0 },
   );
 }
+
+export interface TierRow {
+  id: string;
+  name: string;
+  priceZone: string | null;
+  retailCents: number;
+}
+
+/** The price row for a ticket type in a seat's price area, falling back to the type's general price. */
+export function tierFor<T extends TierRow>(tiers: readonly T[], name: string, zone: string | null): T | undefined {
+  return tiers.find((t) => t.name === name && t.priceZone === zone) ?? tiers.find((t) => t.name === name && t.priceZone === null);
+}
+
+/** Ticket type names in display order, each listed once. */
+export function tierNames(tiers: readonly TierRow[]): string[] {
+  return [...new Set(tiers.map((t) => t.name))];
+}

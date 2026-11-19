@@ -38,3 +38,18 @@ describe("priceLine", () => {
     expect(sumLines([a, b])).toEqual({ subtotalCents: 3000, discountCents: 0, feeCents: 100, taxCents: 0, totalCents: 3100 });
   });
 });
+
+describe("tierFor", () => {
+  const tiers = [
+    { id: "a1", name: "Adult", priceZone: "premium", retailCents: 5800 },
+    { id: "a2", name: "Adult", priceZone: "standard", retailCents: 4800 },
+    { id: "c", name: "Child", priceZone: null, retailCents: 2400 },
+  ];
+  it("prefers the seat's price area and falls back to the general price", async () => {
+    const { tierFor, tierNames } = await import("./pricing");
+    expect(tierFor(tiers, "Adult", "premium")?.id).toBe("a1");
+    expect(tierFor(tiers, "Child", "premium")?.id).toBe("c");
+    expect(tierFor(tiers, "Adult", "balcony")).toBeUndefined();
+    expect(tierNames(tiers)).toEqual(["Adult", "Child"]);
+  });
+});

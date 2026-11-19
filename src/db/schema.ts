@@ -228,12 +228,27 @@ export const holds = pgTable(
     quantity: integer("quantity").notNull(),
     channel: salesChannel("channel").notNull(),
     staffUserId: uuid("staff_user_id").references(() => users.id),
+    /** Random per-browser token for online shoppers; only that browser can see or release the hold. */
+    customerToken: text("customer_token"),
     note: text("note"),
     status: holdStatus("status").notNull().default("active"),
     expiresAt: timestamp("expires_at", { withTimezone: true }),
     createdAt: createdAt(),
   },
   (t) => [index("holds_pool_active_idx").on(t.poolId, t.status)],
+);
+
+// What a hold is for: the ticket type for each seat, or a quantity per ticket type.
+export const holdItems = pgTable(
+  "hold_items",
+  {
+    id: id(),
+    holdId: uuid("hold_id").notNull().references(() => holds.id),
+    priceTierId: uuid("price_tier_id").notNull().references(() => priceTiers.id),
+    seatId: uuid("seat_id").references(() => seats.id),
+    quantity: integer("quantity").notNull().default(1),
+  },
+  (t) => [index("hold_items_hold_idx").on(t.holdId)],
 );
 
 // ---------- Orders, payments, tickets ----------

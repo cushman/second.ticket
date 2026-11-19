@@ -1,39 +1,82 @@
 import Link from "next/link";
-import styles from "./page.module.css";
-import { categories, featured } from "./sample-data";
-import { ThemeToggle } from "./theme-toggle";
+import { connection } from "next/server";
+import { Suspense } from "react";
+import { catalog, categoryCounts } from "@/server/catalog";
+import { ShowCard } from "./show-card";
+import { SiteHeader } from "./site-header";
+import styles from "./site.module.css";
 
-function LogoMark() {
+const CATEGORY_NOTES: Record<string, string> = {
+  "Music & variety": "Matinee and evening shows",
+  "Dinner shows": "Meal and show together",
+  "Comedy & magic": "Family-friendly laughs",
+  "Faith & family": "Biblical and gospel stages",
+  "Theme parks": "Rides, crafts, festivals",
+  "On the lake": "Cruises on Table Rock",
+  "Family fun": "Go-karts, putt-putt, laser tag",
+  Museums: "Indoor, any weather",
+  "Outdoor adventure": "Ziplines, caves, ATVs",
+};
+
+function todayInBranson() {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Chicago" }).format(new Date());
+}
+
+async function Featured() {
+  await connection();
+  const items = (await catalog()).slice(0, 3);
+  if (items.length === 0) return <p className={styles.empty}>New shows are being added. Check back soon.</p>;
   return (
-    <span className={styles.mark} aria-hidden="true">
-      <svg width="24" height="16" viewBox="0 0 18 12">
-        <path d="M1 11 L7 2 L11 7 L13 4.5 L17 11 Z" fill="currentColor" />
-      </svg>
-    </span>
+    <div className={styles.cards}>
+      {items.map((item) => (
+        <ShowCard key={item.id} item={item} />
+      ))}
+    </div>
+  );
+}
+
+async function Browse() {
+  await connection();
+  const counts = await categoryCounts();
+  const names = Object.keys(CATEGORY_NOTES);
+  return (
+    <div className={styles.categories}>
+      {names.map((name) => (
+        <Link key={name} href={`/shows?category=${encodeURIComponent(name)}`} className={styles.category}>
+          <strong>{name}</strong>
+          <span>
+            {counts.get(name) ? `${counts.get(name)} on sale · ` : ""}
+            {CATEGORY_NOTES[name]}
+          </span>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+async function SearchForm() {
+  await connection();
+  return (
+    <form className={styles.search} action="/shows">
+      <label className={styles.field}>
+        <span>Date</span>
+        <input name="date" type="date" defaultValue={todayInBranson()} />
+      </label>
+      <label className={styles.field}>
+        <span>Group size</span>
+        <input name="guests" type="number" min={1} max={10} defaultValue={4} />
+      </label>
+      <button type="submit" className={styles.searchButton}>
+        Find tickets
+      </button>
+    </form>
   );
 }
 
 export default function Home() {
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <Link href="/" className={styles.brand}>
-          <LogoMark />
-          <span>Branson Explorer</span>
-        </Link>
-        <nav className={styles.nav} aria-label="Main">
-          <a href="#shows">Shows</a>
-          <a href="#browse">Attractions</a>
-          <a href="#browse">Christmas</a>
-          <a href="#browse">Groups</a>
-        </nav>
-        <div className={styles.actions}>
-          <ThemeToggle className={styles.iconButton} />
-          <a href="#" className={styles.ghostButton}>Sign in</a>
-          <a href="#" className={styles.accentButton}>My tickets</a>
-        </div>
-      </header>
-
+      <SiteHeader />
       <main className={styles.main}>
         <section className={styles.hero}>
           <p className={styles.eyebrow}>76 Country Blvd · Branson, MO</p>
@@ -46,63 +89,32 @@ export default function Home() {
             Shows, theme parks, go-karts and lake cruises across Branson. Pick a date, tell us who’s coming, and your
             tickets go straight to your phone.
           </p>
-          <form className={styles.search} action="#shows">
-            <label className={styles.field}>
-              <span>Date</span>
-              <input name="date" type="date" defaultValue="2026-11-19" />
-            </label>
-            <label className={styles.field}>
-              <span>Group size</span>
-              <input name="guests" defaultValue="2 adults, 2 kids" />
-            </label>
-            <button type="submit" className={styles.searchButton}>Find tickets</button>
-          </form>
+          <Suspense fallback={<div className={styles.search} style={{ minHeight: 70 }} />}>
+            <SearchForm />
+          </Suspense>
           <p className={styles.fine}>Every price shows tax and fees before you check out.</p>
         </section>
 
-        <section id="shows" className={styles.section}>
+        <section className={styles.section}>
           <div className={styles.sectionHead}>
             <h2>Featured</h2>
-            <span>Promoted · partner placement</span>
+            <Link href="/shows">See everything</Link>
           </div>
-          <div className={styles.cards}>
-            {featured.map((s) => (
-              <article key={s.slug} className={styles.card}>
-                <div className={styles.cardBody}>
-                  <p className={styles.kind}>{s.kind}</p>
-                  <h3>{s.name}</h3>
-                  <div className={styles.photo}>
-                    <span>Show photo</span>
-                    <span className={styles.badge}>{s.badge}</span>
-                  </div>
-                  <p className={styles.times}>{s.times}</p>
-                </div>
-                <div className={styles.stub}>
-                  <span>Adult</span>
-                  <strong>{s.adult}</strong>
-                  <span>Child {s.child}</span>
-                </div>
-              </article>
-            ))}
-          </div>
+          <Suspense fallback={<p className={styles.empty}>Loading shows…</p>}>
+            <Featured />
+          </Suspense>
         </section>
 
-        <section id="browse" className={styles.section}>
+        <section className={styles.section}>
           <div className={styles.sectionHead}>
             <h2>Browse</h2>
           </div>
-          <div className={styles.categories}>
-            {categories.map((c) => (
-              <a key={c.name} href="#" className={styles.category}>
-                <strong>{c.name}</strong>
-                <span>{c.note}</span>
-              </a>
-            ))}
-          </div>
+          <Suspense fallback={<p className={styles.empty}>Loading…</p>}>
+            <Browse />
+          </Suspense>
         </section>
       </main>
-
-      <footer className={styles.footer}>Sample shows, times and prices for layout only.</footer>
+      <footer className={styles.footer}>Branson Explorer · Photos coming soon.</footer>
     </div>
   );
 }

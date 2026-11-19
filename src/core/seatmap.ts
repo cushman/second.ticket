@@ -75,3 +75,45 @@ export function buildSection(rows: string[], seatsPerRow: number, aislesAfter: n
     });
   });
 }
+
+export interface PickSeat {
+  id: string;
+  x: number;
+  y: number;
+  available: boolean;
+}
+
+/**
+ * Finds n seats side by side in one row, never across an aisle, closest to the front and centre.
+ * One row back counts the same as four seats off centre. Returns null when no such block exists.
+ */
+export function bestAvailable(seats: readonly PickSeat[], n: number): string[] | null {
+  if (!Number.isInteger(n) || n < 1 || seats.length === 0) return null;
+  const xs = seats.map((s) => s.x);
+  const centre = (Math.min(...xs) + Math.max(...xs)) / 2;
+  const rows = [...new Set(seats.map((s) => s.y))].sort((a, b) => a - b);
+
+  let best: { score: number; ids: string[] } | null = null;
+  rows.forEach((y, rank) => {
+    const row = seats.filter((s) => s.y === y).sort((a, b) => a.x - b.x);
+    let run: PickSeat[] = [];
+    const consider = () => {
+      for (let i = 0; i + n <= run.length; i++) {
+        const block = run.slice(i, i + n);
+        const mid = (block[0].x + block[n - 1].x) / 2;
+        const score = rank + Math.abs(mid - centre) / 4;
+        if (!best || score < best.score) best = { score, ids: block.map((s) => s.id) };
+      }
+    };
+    for (const seat of row) {
+      const touching = run.length > 0 && seat.x === run[run.length - 1].x + 1;
+      if (seat.available && (touching || run.length === 0)) run.push(seat);
+      else {
+        consider();
+        run = seat.available ? [seat] : [];
+      }
+    }
+    consider();
+  });
+  return (best as { ids: string[] } | null)?.ids ?? null;
+}

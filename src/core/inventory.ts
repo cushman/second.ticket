@@ -1,6 +1,6 @@
 import { and, eq, gt, inArray, isNull, lt, or, sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
-import { holds, inventoryPools, performanceSeats, performances } from "@/db/schema";
+import { holdItems, holds, inventoryPools, performanceSeats, performances } from "@/db/schema";
 
 type Channel = (typeof holds.$inferInsert)["channel"];
 
@@ -18,6 +18,12 @@ export class InventoryError extends Error {
 
 export const DEFAULT_HOLD_SECONDS = 600;
 
+export interface HoldItem {
+  priceTierId: string;
+  seatId?: string;
+  quantity?: number;
+}
+
 export interface SeatHoldRequest {
   performanceId: string;
   seatIds: string[];
@@ -26,6 +32,9 @@ export interface SeatHoldRequest {
   /** null = no expiry (staff group holds). */
   ttlSeconds?: number | null;
   note?: string;
+  customerToken?: string;
+  /** Ticket type per seat. */
+  items?: HoldItem[];
   now?: Date;
 }
 
@@ -51,6 +60,7 @@ export async function holdSeats(db: Db, req: SeatHoldRequest) {
         quantity: seatIds.length,
         channel: req.channel,
         staffUserId: req.staffUserId,
+        customerToken: req.customerToken,
         note: req.note,
         expiresAt,
       })
@@ -74,6 +84,12 @@ export async function holdSeats(db: Db, req: SeatHoldRequest) {
     if (taken.length !== seatIds.length) {
       throw new InventoryError("unavailable", "One or more of those seats was just taken.");
     }
+    if (req.items?.length) {
+      if (req.items.some((i) => !i.seatId || !seatIds.includes(i.seatId)) || req.items.length !== seatIds.length) {
+        throw new InventoryError("invalid_request", "Each held seat needs exactly one ticket type.");
+      }
+      await tx.insert(holdItems).values(req.items.map((i) => ({ holdId: hold.id, priceTierId: i.priceTierId, seatId: i.seatId, quantity: 1 })));
+    }
     return { holdId: hold.id, expiresAt, seatIds };
   });
 }
@@ -85,6 +101,9 @@ export interface CapacityHoldRequest {
   staffUserId?: string;
   ttlSeconds?: number | null;
   note?: string;
+  customerToken?: string;
+  /** Quantity per ticket type; must add up to quantity. */
+  items?: HoldItem[];
   now?: Date;
 }
 
@@ -137,10 +156,17 @@ export async function holdCapacity(db: Db, req: CapacityHoldRequest) {
         quantity: req.quantity,
         channel: req.channel,
         staffUserId: req.staffUserId,
+        customerToken: req.customerToken,
         note: req.note,
         expiresAt,
       })
       .returning({ id: holds.id });
+    if (req.items?.length) {
+      if (req.items.reduce((a, i) => a + (i.quantity ?? 0), 0) !== req.quantity) {
+        throw new InventoryError("invalid_request", "Ticket types must add up to the quantity held.");
+      }
+      await tx.insert(holdItems).values(req.items.map((i) => ({ holdId: hold.id, priceTierId: i.priceTierId, quantity: i.quantity ?? 0 })));
+    }
     return { holdId: hold.id, expiresAt };
   });
 }
