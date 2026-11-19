@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Suspense } from "react";
 import { can } from "@/core/permissions";
 import { requireStaff } from "@/server/auth";
@@ -60,7 +61,9 @@ async function Products() {
                 {list.map((p) => (
                   <tr key={p.id}>
                     <td>
-                      <strong>{p.name}</strong>
+                      <Link href={`/admin/products/${p.id}`}>
+                        <strong>{p.name}</strong>
+                      </Link>
                       <div className={styles.muted}>
                         {p.venueName} · {p.category}
                       </div>
@@ -259,7 +262,7 @@ export default function ProductsPage() {
     <>
       <div className={styles.pageHead}>
         <h1>Shows &amp; attractions</h1>
-        <p>Everything that sells: theater shows, go-karts, putt-putt, cruises. Dates and time slots come next.</p>
+        <p>Everything that sells: theater shows, go-karts, putt-putt, cruises. Open one to add dates or time slots.</p>
       </div>
       <Suspense fallback={<p className={styles.muted}>Loading catalog…</p>}>
         <Products />

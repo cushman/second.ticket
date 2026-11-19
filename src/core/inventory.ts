@@ -1,6 +1,6 @@
 import { and, eq, gt, inArray, isNull, lt, or, sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
-import { holds, inventoryPools, performanceSeats } from "@/db/schema";
+import { holds, inventoryPools, performanceSeats, performances } from "@/db/schema";
 
 type Channel = (typeof holds.$inferInsert)["channel"];
 
@@ -42,6 +42,7 @@ export async function holdSeats(db: Db, req: SeatHoldRequest) {
   const expiresAt = ttl === null ? null : new Date(now.getTime() + ttl * 1000);
 
   return db.transaction(async (tx) => {
+    await assertOnSale(tx as unknown as Db, req.performanceId);
     const [hold] = await tx
       .insert(holds)
       .values({
@@ -87,6 +88,12 @@ export interface CapacityHoldRequest {
   now?: Date;
 }
 
+async function assertOnSale(tx: Db, performanceId: string) {
+  const [perf] = await tx.select({ status: performances.status }).from(performances).where(eq(performances.id, performanceId));
+  if (!perf) throw new InventoryError("invalid_request", "That date no longer exists.");
+  if (perf.status !== "on_sale") throw new InventoryError("unavailable", "That date isn't on sale.");
+}
+
 async function activeHeld(tx: Db, poolId: string, now: Date) {
   const [row] = await tx
     .select({ held: sql<number>`coalesce(sum(${holds.quantity}), 0)::int` })
@@ -113,6 +120,7 @@ export async function holdCapacity(db: Db, req: CapacityHoldRequest) {
   return db.transaction(async (tx) => {
     const [pool] = await tx.select().from(inventoryPools).where(eq(inventoryPools.id, req.poolId)).for("update");
     if (!pool) throw new InventoryError("invalid_request", "That ticket option no longer exists.");
+    if (pool.performanceId) await assertOnSale(tx as unknown as Db, pool.performanceId);
 
     if (pool.capacity !== null) {
       const held = await activeHeld(tx as unknown as Db, pool.id, now);

@@ -3,6 +3,9 @@ import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as s from "./schema";
+import type { Db } from "./client";
+import { createPerformances } from "../core/performances";
+import { expandSchedule, type Times } from "../core/schedule";
 
 const url = process.env.DATABASE_URL;
 if (!url) throw new Error("DATABASE_URL is not set");
@@ -12,13 +15,17 @@ const pool = new Pool({ connectionString: url });
 const db = drizzle(pool, { schema: s });
 
 const DAYS = 7;
-const tz = "-06:00";
+const TZ = "America/Chicago";
+const ymd = (offset: number) =>
+  new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(
+    new Date(Date.now() + offset * 86400000),
+  );
 
-function dayAt(offset: number, hhmm: string) {
-  const d = new Date();
-  d.setDate(d.getDate() + offset);
-  const ymd = d.toISOString().slice(0, 10);
-  return new Date(`${ymd}T${hhmm}:00${tz}`);
+function nextWeek(times: Times) {
+  const now = Date.now();
+  return expandSchedule({ startDate: ymd(0), endDate: ymd(DAYS - 1), weekdays: [0, 1, 2, 3, 4, 5, 6], times, timeZone: TZ })
+    .map((o) => o.startsAt)
+    .filter((t) => t.getTime() > now);
 }
 
 async function main() {
@@ -119,12 +126,7 @@ async function main() {
     { productId: jubilee.id, name: "Teen (13–18)", retailCents: 3800, sortOrder: 3 },
     { productId: jubilee.id, name: "Child (4–12)", retailCents: 2400, sortOrder: 4 },
   ]);
-  for (let d = 0; d < DAYS; d++) {
-    for (const time of ["14:00", "19:30"]) {
-      const [perf] = await db.insert(s.performances).values({ productId: jubilee.id, startsAt: dayAt(d, time) }).returning();
-      await db.insert(s.performanceSeats).values(seatIds.map((seatId) => ({ performanceId: perf.id, seatId })));
-    }
-  }
+  await createPerformances(db as unknown as Db, jubilee, nextWeek({ mode: "list", times: ["14:00", "19:30"] }), { durationMinutes: 120 });
 
   const [karts] = await db
     .insert(s.products)
@@ -147,13 +149,10 @@ async function main() {
     { productId: karts.id, name: "Driver", retailCents: 1800, sortOrder: 0 },
     { productId: karts.id, name: "Passenger (under 54 in)", retailCents: 1200, sortOrder: 1 },
   ]);
-  for (let d = 0; d < DAYS; d++) {
-    for (let minutes = 10 * 60; minutes < 21 * 60; minutes += 10) {
-      const hhmm = `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
-      const [slot] = await db.insert(s.performances).values({ productId: karts.id, startsAt: dayAt(d, hhmm) }).returning();
-      await db.insert(s.inventoryPools).values({ productId: karts.id, performanceId: slot.id, label: `${hhmm} heat`, capacity: 8 });
-    }
-  }
+  await createPerformances(db as unknown as Db, karts, nextWeek({ mode: "interval", open: "10:00", close: "21:00", everyMinutes: 10 }), {
+    capacity: 8,
+    durationMinutes: 10,
+  });
 
   const [putt] = await db
     .insert(s.products)
@@ -193,12 +192,10 @@ async function main() {
     { productId: cruise.id, name: "Adult", retailCents: 6200, netCents: 4500, sortOrder: 0 },
     { productId: cruise.id, name: "Child (4–12)", retailCents: 3200, netCents: 2300, sortOrder: 1 },
   ]);
-  for (let d = 0; d < DAYS; d++) {
-    for (const time of ["12:00", "19:00"]) {
-      const [sail] = await db.insert(s.performances).values({ productId: cruise.id, startsAt: dayAt(d, time) }).returning();
-      await db.insert(s.inventoryPools).values({ productId: cruise.id, performanceId: sail.id, label: "Branson Explorer block", capacity: 40 });
-    }
-  }
+  await createPerformances(db as unknown as Db, cruise, nextWeek({ mode: "list", times: ["12:00", "19:00"] }), {
+    capacity: 40,
+    durationMinutes: 150,
+  });
 
   console.log(`Seeded ${people.length} staff, 4 companies (incl. ${platform.name}), 4 products, ${seatIds.length} seats.`);
 }

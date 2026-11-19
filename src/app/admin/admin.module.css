@@ -398,6 +398,106 @@
   background: var(--be-accent);
 }
 
+.timeChip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--be-line);
+  border-radius: var(--be-radius-control);
+  background: var(--be-bg);
+}
+
+.timeChip input {
+  min-height: 42px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--be-fg);
+  font: 500 16px var(--be-font-mono);
+}
+
+.timeChip button {
+  width: 36px;
+  min-height: 42px;
+  border: 0;
+  border-left: 1px solid var(--be-line);
+  background: transparent;
+  color: var(--be-muted);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.days {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 900px;
+  overflow-y: auto;
+}
+
+.day {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--be-line);
+}
+
+.day summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.dayRows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dateRow {
+  display: grid;
+  grid-template-columns: 84px minmax(90px, 1fr) auto auto;
+  align-items: center;
+  gap: 4px 12px;
+  font-size: 15px;
+}
+
+.dateRow[data-status="cancelled"] .mono {
+  text-decoration: line-through;
+  color: var(--be-muted);
+}
+
+.dateActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px 14px;
+}
+
+@media (max-width: 1100px) {
+  .dateRow {
+    grid-template-columns: 84px minmax(0, 1fr) auto;
+  }
+
+  .dateActions {
+    grid-column: 2 / -1;
+    justify-content: flex-start;
+  }
+}
+
+.linkButton {
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  color: var(--be-accent-text);
+  font: 500 14px var(--be-font-body);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
 .legend {
   margin: 12px 0 0;
   display: flex;

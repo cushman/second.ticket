@@ -174,7 +174,7 @@ export const performances = pgTable(
     endsAt: timestamp("ends_at", { withTimezone: true }),
     status: performanceStatus("status").notNull().default("on_sale"),
   },
-  (t) => [index("performances_product_starts_idx").on(t.productId, t.startsAt)],
+  (t) => [uniqueIndex("performances_product_starts_uq").on(t.productId, t.startsAt)],
 );
 
 // ---------- Inventory ----------

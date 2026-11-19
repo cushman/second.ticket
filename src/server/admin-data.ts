@@ -66,6 +66,20 @@ export async function productsFor(staff: Staff) {
   return visible.map((p) => ({ ...p, tiers: tiers.filter((t) => t.productId === p.id) }));
 }
 
+/** One product the staff member may manage, with its venue time zone and prices; null when out of scope. */
+export async function productDetail(staff: Staff, productId: string) {
+  const visible = (await productsFor(staff)).find((p) => p.id === productId);
+  if (!visible) return null;
+  const db = getDb();
+  const [row] = await db
+    .select({ product: products, venueName: venues.name, timeZone: venues.timezone, seatMapName: seatMaps.name })
+    .from(products)
+    .innerJoin(venues, eq(venues.id, products.venueId))
+    .leftJoin(seatMaps, eq(seatMaps.id, products.seatMapId))
+    .where(eq(products.id, productId));
+  return { ...row, tiers: visible.tiers };
+}
+
 export async function seatMapsFor(staff: Staff) {
   const allowed = await venuesFor(staff, "venue.manage");
   if (allowed.length === 0) return [];

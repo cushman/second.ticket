@@ -38,6 +38,10 @@ See `src/core/pricing.ts`. Every order line stores its venue payout and platform
 
 Tests in `src/core/inventory.test.ts` run against in-process Postgres (PGlite) and, when `TEST_DATABASE_URL` is set, against real Postgres with parallel connections.
 
+## Schedules
+
+`src/core/schedule.ts` expands a rule (date range, weekdays, start times or open/close with a slot interval, dark days) into exact start times in the venue's time zone, correct across daylight-saving changes. `src/core/performances.ts` creates the performances with their inventory: every seat for reserved shows, a capacity pool for general admission, time slots and allocation blocks. Existing start times are skipped, so re-running a schedule is safe (unique on product + start time). A date with tickets sold or held can be taken off sale but not cancelled; holds are refused for any date that isn't on sale.
+
 ## Roles
 
 `platform_admin`, `call_center` (all venues), `venue_manager`, `box_office`, `door`. Stored in `memberships`; `org_id` null means platform-wide, `venue_id` set limits a membership to one venue. Rules live in `src/core/permissions.ts`; every server action checks them against the exact company and venue it changes. Supply type, money model, commission and service fee are platform-only terms.
@@ -54,7 +58,7 @@ Sales channel, staff member, payment method, price breakdown (fee, tax, payout, 
 
 ## Roadmap
 
-1. **Foundation** (in progress): schema, inventory engine, pricing, theming, site shell, roles and permissions, staff admin (venues, seat maps, shows and attractions, brand colors). Next: dates and time slots, then production sign-in (Supabase Auth) to replace development sign-in.
+1. **Foundation** (in progress): schema, inventory engine, pricing, theming, site shell, roles and permissions, staff admin (venues, seat maps, shows and attractions, schedules, brand colors). Next: production sign-in (Supabase Auth) to replace development sign-in.
 2. **Marketplace**: catalog from the database, checkout with Stripe Connect, mobile tickets and vouchers, voucher redemption page, call-center selling.
 3. **Venue platform basics**: offline-capable scanning app, live dashboard, venue-branded checkout.
 4. **Full box office**: window and phone screens, close-outs, settlements, migrations from old systems.
