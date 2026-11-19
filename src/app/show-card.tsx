@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { formatLocal } from "@/core/schedule";
 import type { CatalogItem } from "@/server/catalog";
+import { artFor } from "./art";
 import styles from "./site.module.css";
 
 const KIND = {
@@ -18,14 +19,13 @@ export function ShowCard({ item }: { item: CatalogItem }) {
     <Link href={`/shows/${item.slug}`} className={styles.cardLink}>
       <article className={styles.card}>
         <div className={styles.cardBody}>
+          <div className={styles.photo} style={{ backgroundImage: `url(${artFor(item.category, item.name)})` }}>
+            <span className={styles.badge}>{badge}</span>
+          </div>
           <p className={styles.kind}>
             {item.category} · {item.venueName}
           </p>
           <h3>{item.name}</h3>
-          <div className={styles.photo}>
-            <span>Photo</span>
-            <span className={styles.badge}>{badge}</span>
-          </div>
           <p className={styles.times}>{item.nextStart ? `Next: ${formatLocal(item.nextStart, item.timeZone)}` : "Use any day"}</p>
         </div>
         <div className={styles.stub}>

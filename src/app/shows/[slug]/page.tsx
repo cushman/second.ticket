@@ -9,6 +9,7 @@ import styles from "../../site.module.css";
 import { MAX_TICKETS } from "../limits";
 import { SeatPicker } from "./seat-picker";
 import { TicketCounter } from "./ticket-counter";
+import { artFor } from "../../art";
 
 type Search = { date?: string; time?: string };
 
@@ -64,6 +65,7 @@ async function Show({ params, searchParams }: { params: Promise<{ slug: string }
       <Link href={`/shows?category=${encodeURIComponent(product.category)}`} className={styles.backLink}>
         ← {product.category}
       </Link>
+      <div className={styles.banner} style={{ backgroundImage: `url(${artFor(product.category, product.name)})` }} aria-hidden="true" />
       <h1 className={styles.pageTitle}>{product.name}</h1>
       <ul className={styles.facts}>
         <li>

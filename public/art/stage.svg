@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1410"/><stop offset="1" stop-color="#120a08"/></linearGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd9a8" stop-opacity=".75"/><stop offset="1" stop-color="#ffb070" stop-opacity="0"/></linearGradient>
+    <linearGradient id="curtain" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6e1a12"/><stop offset=".5" stop-color="#9c2a1a"/><stop offset="1" stop-color="#5a140e"/></linearGradient>
+    <radialGradient id="pool" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffcf93" stop-opacity=".8"/><stop offset="1" stop-color="#ffcf93" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <polygon points="250,0 300,0 430,360 330,360" fill="url(#beam)"/>
+  <polygon points="520,0 560,0 470,360 380,360" fill="url(#beam)"/>
+  <polygon points="390,0 420,0 440,360 360,360" fill="url(#beam)" opacity=".6"/>
+  <g fill="url(#curtain)">
+    <path d="M0 0h170c-10 120-30 260-20 380H0z"/><path d="M800 0H630c10 120 30 260 20 380h150z"/>
+  </g>
+  <g stroke="#3e0c08" stroke-width="3" opacity=".5"><path d="M40 0v380M90 0v380M130 0c-6 120-16 260-8 380"/><path d="M760 0v380M710 0v380M670 0c6 120 16 260 8 380"/></g>
+  <path d="M0 0h800v40c-60 18-140 22-200 8-60 18-140 22-200 8-60 18-140 22-200 8C140 70 60 66 0 48z" fill="#7d1e14"/>
+  <ellipse cx="400" cy="372" rx="190" ry="34" fill="url(#pool)"/>
+  <rect y="360" width="800" height="140" fill="#1d0f0b"/>
+  <rect y="358" width="800" height="6" fill="#e8834a" opacity=".8"/>
+  <g fill="#0d0706">
+    <circle cx="380" cy="282" r="14"/><path d="M362 300h36l6 62h-48z"/>
+    <path d="M402 312l46-20 4 8-44 22z"/><ellipse cx="418" cy="330" rx="20" ry="14" transform="rotate(-24 418 330)"/>
+  </g>
+  <g fill="#070403">
+    <circle cx="60" cy="440" r="34"/><circle cx="150" cy="452" r="38"/><circle cx="250" cy="440" r="32"/><circle cx="340" cy="456" r="36"/><circle cx="440" cy="444" r="34"/><circle cx="540" cy="456" r="38"/><circle cx="640" cy="442" r="33"/><circle cx="740" cy="452" r="37"/>
+    <rect y="460" width="800" height="40"/>
+  </g>
+</svg>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { catalog, categoryCounts } from "@/server/catalog";
+import { artFor } from "./art";
 import { ShowCard } from "./show-card";
 import { SiteHeader } from "./site-header";
 import styles from "./site.module.css";
@@ -43,10 +44,13 @@ async function Browse() {
     <div className={styles.categories}>
       {names.map((name) => (
         <Link key={name} href={`/shows?category=${encodeURIComponent(name)}`} className={styles.category}>
-          <strong>{name}</strong>
-          <span>
-            {counts.get(name) ? `${counts.get(name)} on sale · ` : ""}
-            {CATEGORY_NOTES[name]}
+          <span className={styles.categoryArt} style={{ backgroundImage: `url(${artFor(name)})` }} aria-hidden="true" />
+          <span className={styles.categoryText}>
+            <strong>{name}</strong>
+            <span>
+              {counts.get(name) ? `${counts.get(name)} on sale · ` : ""}
+              {CATEGORY_NOTES[name]}
+            </span>
           </span>
         </Link>
       ))}
@@ -78,21 +82,28 @@ export default function Home() {
     <div className={styles.page}>
       <SiteHeader />
       <main className={styles.main}>
-        <section className={styles.hero}>
-          <p className={styles.eyebrow}>76 Country Blvd · Branson, MO</p>
-          <h1 className={styles.headline}>
-            Showtime
-            <br />
-            on the <span>76.</span>
-          </h1>
-          <p className={styles.lead}>
-            Shows, theme parks, go-karts and lake cruises across Branson. Pick a date, tell us who’s coming, and your
-            tickets go straight to your phone.
-          </p>
-          <Suspense fallback={<div className={styles.search} style={{ minHeight: 70 }} />}>
-            <SearchForm />
-          </Suspense>
-          <p className={styles.fine}>Every price shows tax and fees before you check out.</p>
+        <section className={styles.heroWrap}>
+          <div className={styles.hero}>
+            <p className={styles.eyebrow}>76 Country Blvd · Branson, MO</p>
+            <h1 className={styles.headline}>
+              Showtime
+              <br />
+              on the <span>76.</span>
+            </h1>
+            <p className={styles.lead}>
+              Shows, theme parks, go-karts and lake cruises across Branson. Pick a date, tell us who’s coming, and your
+              tickets go straight to your phone.
+            </p>
+            <Suspense fallback={<div className={styles.search} style={{ minHeight: 70 }} />}>
+              <SearchForm />
+            </Suspense>
+            <p className={styles.fine}>Every price shows tax and fees before you check out.</p>
+          </div>
+          <div className={styles.collage} aria-hidden="true">
+            <span style={{ backgroundImage: "url(/art/stage.svg)" }} />
+            <span style={{ backgroundImage: "url(/art/lake.svg)" }} />
+            <span style={{ backgroundImage: "url(/art/karts.svg)" }} />
+          </div>
         </section>
 
         <section className={styles.section}>
@@ -114,7 +125,7 @@ export default function Home() {
           </Suspense>
         </section>
       </main>
-      <footer className={styles.footer}>Branson Explorer · Photos coming soon.</footer>
+      <footer className={styles.footer}>Branson Explorer · Illustrations stand in until venue photos arrive.</footer>
     </div>
   );
 }

@@ -13,6 +13,8 @@
   --be-accent: #E8834A;
   --be-on-accent: #151312;
   --be-accent-text: #F09A66;
+  --be-glow: rgb(232 131 74 / 0.16);
+  --be-glow-soft: rgb(232 131 74 / 0.07);
 
   --be-seat-ring: #C9BFB8;
   --be-seat-unavailable: #2B2623;
@@ -44,6 +46,8 @@
     --be-accent: #B4531E;
     --be-on-accent: #FFFFFF;
     --be-accent-text: #A04717;
+    --be-glow: rgb(232 131 74 / 0.22);
+    --be-glow-soft: rgb(232 131 74 / 0.10);
     --be-seat-ring: #6B615B;
     --be-seat-unavailable: #ECE7E3;
     --be-seat-unavailable-mark: #A39992;
@@ -62,6 +66,8 @@
   --be-accent: #B4531E;
   --be-on-accent: #FFFFFF;
   --be-accent-text: #A04717;
+  --be-glow: rgb(232 131 74 / 0.22);
+  --be-glow-soft: rgb(232 131 74 / 0.10);
   --be-seat-ring: #6B615B;
   --be-seat-unavailable: #ECE7E3;
   --be-seat-unavailable-mark: #A39992;

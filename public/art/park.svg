@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b1d3a"/><stop offset=".6" stop-color="#b8503a"/><stop offset="1" stop-color="#f0a060"/></linearGradient></defs>
+  <rect width="800" height="500" fill="url(#sky)"/>
+  <g transform="translate(560 240)" stroke="#1a1018" stroke-width="5" fill="none">
+    <circle r="150"/><circle r="20" fill="#1a1018"/>
+    <path d="M0-150V150M-150 0H150M-106-106L106 106M106-106L-106 106"/>
+    <path d="M-10 20l-70 240M10 20l70 240" stroke-width="10"/>
+  </g>
+  <g fill="#ffd38f"><circle cx="560" cy="90" r="9"/><circle cx="710" cy="240" r="9"/><circle cx="560" cy="390" r="9"/><circle cx="410" cy="240" r="9"/><circle cx="666" cy="134" r="9"/><circle cx="454" cy="134" r="9"/><circle cx="666" cy="346" r="9"/><circle cx="454" cy="346" r="9"/></g>
+  <path d="M0 330c60-120 120-200 180-60s110 40 160-30 90 80 120 140" fill="none" stroke="#1a1018" stroke-width="8"/>
+  <g stroke="#1a1018" stroke-width="4"><path d="M60 300v200M120 230v270M180 270v230M240 320v180M300 300v200"/></g>
+  <rect y="440" width="800" height="60" fill="#1a1018"/>
+</svg>
